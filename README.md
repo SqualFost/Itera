@@ -1,4 +1,4 @@
-<img width="645" height="311" alt="image" src="https://github.com/user-attachments/assets/52bffdc1-22d7-4be5-aa0e-4ebbb17fd85b" /># ITERA
+# ITERA
 
 **Local CLI AI Agent powered by Ollama.**
 
