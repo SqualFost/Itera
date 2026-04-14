@@ -1,15 +1,13 @@
-import os, time
-import sys
-import tty
-import termios
+import os, time, platform
 from rich.console import Console
+from rich.markdown import Markdown
 from rich.table import Table
 from rich.panel import Panel
 from rich.text import Text
 from datetime import datetime
+from model import model_chat, change_model, list_models
 
 console = Console()
-
 
 def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -46,15 +44,6 @@ def launch_ui(ai_name="demo"):
 
     return Panel(grid, border_style="sea_green2", expand=False, padding=(1, 3))
 
-def getch():
-    fd = sys.stdin.fileno()
-    old = termios.tcgetattr(fd)
-    try:
-        tty.setraw(fd)
-        return sys.stdin.read(1)
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old)
-
 def main():
     clear_terminal()
 
@@ -62,7 +51,29 @@ def main():
         time.sleep(1)
 
     console.print(launch_ui())
-    console.print("\n[dim]— Press M to change model[/dim]\n")
+    console.print("\n[dim]— Press Ctrl+C to exit[/dim]\n")
+    console.print(f"ITERA > Bonjour {platform.uname().node.split('.')[0]}\n")
+    try:
+        while True:
+            text = input("USER > ")
+            if text == '/exit' or text == '/bye':
+                clear_terminal()
+                with console.status("[bold sea_green2]Exiting ITERA...", spinner="bouncingBar"):
+                    time.sleep(1)
+                clear_terminal()
+                break
+            elif text == '/model':
+                console.print(list_models())
+            else:
+                output = model_chat(text, "gemma4:e4b")
+                console.print("\nITERA >")
+                console.print(Markdown(output))
+
+    except KeyboardInterrupt:
+        clear_terminal()
+        with console.status("[bold sea_green2]Exiting ITERA...", spinner="bouncingBar"):
+            time.sleep(1)
+        clear_terminal()
 
 if __name__ == "__main__":
     main()
