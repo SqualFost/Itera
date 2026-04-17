@@ -1,7 +1,3 @@
-Here is the English version of the Markdown, professionally structured and without emojis.
-
----
-
 # ITERA
 
 **Local CLI AI Agent powered by Ollama.**
@@ -110,7 +106,7 @@ ITERA operates as a local agent following these steps:
 
 ## Example
 
-
+![ITERA EXAMPLE](Example_screen.png)
 
 ---
 
