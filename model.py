@@ -1,4 +1,3 @@
-from ollama import chat
 import ollama
 from tools import (
     read_file,
@@ -8,8 +7,15 @@ from tools import (
     system_info,
     run_command,
     search_files,
-    tree
+    tree,
+    check_network,
+    web_search_and_read,
+    get_place_infos,
 )
+from rich.console import Console
+
+console = Console()
+conversation_history = []
 
 available_functions = {
     "read_file": read_file,
@@ -20,10 +26,12 @@ available_functions = {
     "run_command": run_command,
     "search_files": search_files,
     "tree": tree,
+    "check_network": check_network,
+    "web_search_and_read": web_search_and_read,
+    "get_place_infos": get_place_infos,
 }
 
 model = 'gemma4:e4b'
-
 #List all availables models
 def list_models():
     p = []
@@ -34,44 +42,51 @@ def list_models():
     except Exception:
         return None
 
+
 #Chat with LLM, takes in argument the model that has been chosen, and the user input
 def model_chat(text: str, model: str):
-    messages = [
-        {
-            "role" : "system",
+    global conversation_history
+
+    if not conversation_history:
+        conversation_history.append({
+            "role": "system",
             "content": (
                 "You are ITERA, a CLI coding agent."
                 "You can use tools when needed."
             )
-        },
-        {"role": "user", "content": text}
-    ]
+        })
+
+    conversation_history.append({"role": "user", "content": text})
+
     while True:
-        response = chat(
+        response = ollama.chat(
             model=model,
-            messages=messages,
+            messages=conversation_history,
             tools=list(available_functions.values()),
         )
 
-        messages.append(response.message)
+        conversation_history.append(response.message)
 
         if response.message.tool_calls:
             for call in response.message.tool_calls:
                 fn_name = call.function.name
                 args = call.function.arguments
 
+                console.print(f"❢ Now using tool : {fn_name} on {list(args.values())}")
+
                 if fn_name in available_functions:
                     result = available_functions[fn_name](**args)
                 else:
                     result = "Unknown tool"
 
-                messages.append({
+                conversation_history.append({
                     "role": "tool",
                     "tool_name": fn_name,
                     "content": str(result)
                 })
         else:
             return response.message.content
+
 
 def change_model(model: str, index: int) -> str:
     models = list_models()
@@ -81,5 +96,11 @@ def change_model(model: str, index: int) -> str:
         return model
     return models[index]
 
+def reset_context():
+    global conversation_history
+    conversation_history = []
+
+
+
 if __name__ == "__main__":
-    model_chat("j'ai combien de ram ? ", model)
+    print(web_search_and_read("temperature toulon"))

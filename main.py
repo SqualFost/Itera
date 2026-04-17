@@ -5,12 +5,13 @@ from rich.table import Table
 from rich.panel import Panel
 from rich.text import Text
 from datetime import datetime
-from model import model_chat, change_model, list_models
+from model import model_chat, list_models, reset_context
 
 console = Console()
 
 def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
+
 
 
 def launch_ui(ai_name="demo"):
@@ -44,6 +45,8 @@ def launch_ui(ai_name="demo"):
 
     return Panel(grid, border_style="sea_green2", expand=False, padding=(1, 3))
 
+
+
 def main():
     clear_terminal()
 
@@ -52,7 +55,7 @@ def main():
 
     console.print(launch_ui())
     console.print("\n[dim]— Press Ctrl+C to exit[/dim]\n")
-    console.print(f"ITERA > Bonjour {platform.uname().node.split('.')[0]}\n")
+    console.print(f"ITERA > Hi {platform.uname().node.split('.')[0]}\n")
     try:
         while True:
             text = input("USER > ")
@@ -64,6 +67,8 @@ def main():
                 break
             elif text == '/model':
                 console.print(list_models())
+            elif text == '/reset':
+                reset_context()
             else:
                 output = model_chat(text, "gemma4:e4b")
                 console.print("\nITERA >")
@@ -74,6 +79,8 @@ def main():
         with console.status("[bold sea_green2]Exiting ITERA...", spinner="bouncingBar"):
             time.sleep(1)
         clear_terminal()
+
+
 
 if __name__ == "__main__":
     main()

@@ -17,6 +17,8 @@ def read_file(path: str) -> str:
     with open(path, "r") as f:
         return f.read()
 
+
+
 def read_many_files(files: list[str]) -> dict:
     """
     Read multiple files and return their contents.
@@ -28,6 +30,8 @@ def read_many_files(files: list[str]) -> dict:
         dict: Mapping of file path to file content.
     """
     return {f: open(f).read() for f in files}
+
+
 
 def write_file(path: str, content: str) -> str:
     """
@@ -44,6 +48,8 @@ def write_file(path: str, content: str) -> str:
         f.write(content)
     return "File written successfully"
 
+
+
 def list_files(path: str) -> list:
     """
     List files and directories in a given path.
@@ -56,6 +62,8 @@ def list_files(path: str) -> list:
     """
     import os
     return os.listdir(path)
+
+
 
 def system_info() -> dict:
     """
@@ -101,6 +109,7 @@ def system_info() -> dict:
     }
 
 
+
 def run_command(cmd: str) -> str:
     """
     Execute a shell command and return its output.
@@ -114,6 +123,8 @@ def run_command(cmd: str) -> str:
     import subprocess
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     return result.stdout + result.stderr
+
+
 
 def search_files(root: str, query: str) -> list:
     """
@@ -134,6 +145,8 @@ def search_files(root: str, query: str) -> list:
                 matches.append(os.path.join(dirpath, f))
     return matches
 
+
+
 def tree(path=".") -> dict:
     """
     Get a simple directory tree snapshot of a path.
@@ -152,6 +165,132 @@ def tree(path=".") -> dict:
 
 
 
+# function to check internet connectivity
+def check_network(url="www.google.com", timeout=3):
+    """
+    Function to test if the user is connected to the internet.
+    Return True if is connected else false.
+    Default url is www.google.com, timeout is 3s.
+    :param url:
+    :param timeout:
+    :return:
+    """
+    import http.client as httplib
+
+    connection = httplib.HTTPConnection(url,
+                                        timeout=timeout)
+    try:
+        connection.request("HEAD", "/")
+        connection.close()
+        return True
+    except Exception as exep:
+        return False
+
+
+def get_place_infos(lat: float, lon: float) -> dict:
+    """
+    Retrieve comprehensive environmental information for a geographic location.
+    This includes:
+    - Current weather (temperature, wind, weather code)
+    - Hourly forecast summary (temperature, precipitation, wind speed)
+    - Air quality data (if available)
+    Args:
+    lat (float): Latitude of the location.
+    lon (float): Longitude of the location.
+
+    Returns:
+        dict: Combined weather + air quality information.
+    """
+
+    import requests
+    weather_url = "https://api.open-meteo.com/v1/forecast"
+    weather_params = {
+        "latitude": lat,
+        "longitude": lon,
+        "current_weather": True,
+        "hourly": "temperature_2m,precipitation,windspeed_10m",
+        "timezone": "auto",
+    }
+
+    weather_data = requests.get(weather_url, params=weather_params).json()
+
+    air_url = "https://air-quality-api.open-meteo.com/v1/air-quality"
+    air_params = {
+        "latitude": lat,
+        "longitude": lon,
+        "current": "european_aqi,pm10,pm2_5,carbon_monoxide,nitrogen_dioxide"
+    }
+
+    try:
+        air_data = requests.get(air_url, params=air_params).json()
+    except Exception:
+        air_data = None
+
+    return {
+        "current_weather": weather_data.get("current_weather"),
+        "hourly": weather_data.get("hourly"),
+        "air_quality": (
+            air_data.get("current") if isinstance(air_data, dict) else None
+        ),
+    }
+
+
+
+
+def web_search(query: str):
+    from ddgs import DDGS
+    try:
+        results = DDGS().text(query, max_results=3)
+
+        if not results:
+            return []
+
+        return [
+            {
+                "title": r.get("title"),
+                "url": r.get("href"),
+                "snippet": r.get("body"),
+            }
+            for r in results
+        ]
+    except Exception as e:
+        return [{"error": str(e)}]
+
+
+def web_search_and_read(query: str, max_pages: int = 3):
+    """
+    Web search using ddgs (DuckDuckGo metasearch).
+    Returns formatted top results.
+    """
+    from ddgs import DDGS
+    import requests
+    import trafilatura
+
+    results = DDGS().text(query, max_results=max_pages)
+
+    output = []
+
+    for r in results:
+        url = r.get("href")
+        try:
+            html = requests.get(url, timeout=10).text
+            text = trafilatura.extract(html)
+
+            output.append({
+                "title": r.get("title"),
+                "url": url,
+                "content": text[:3000] if text else None
+            })
+        except Exception as e:
+            output.append({
+                "url": url,
+                "error": str(e)
+            })
+
+    return output
+
+
+
 available_tools = [
     "read_file",
     "read_many_files",
@@ -161,4 +300,7 @@ available_tools = [
     "run_command",
     "search_files",
     "tree",
+    "check_network",
+    "web_search",
+    "get_place_infos",
 ]
