@@ -7,8 +7,7 @@ from rich.markdown import Markdown
 from rich.table import Table
 from rich.panel import Panel
 from rich.text import Text
-from .agent import model_chat, list_models, reset_context
-
+from .agent import Agent, list_models, reset_context
 console = Console()
 
 def clear_terminal():
@@ -46,6 +45,8 @@ def launch_ui(ai_name="ITERA"):
     return Panel(grid, border_style="sea_green2", expand=False, padding=(1, 3))
 
 def main():
+    current_model = "gemma4:e4b"
+    agent = Agent(model=current_model)
     clear_terminal()
 
     with console.status("[bold sea_green2]Initializing ITERA...", spinner="bouncingBar"):
@@ -53,27 +54,29 @@ def main():
 
     console.print(launch_ui())
     console.print("\n[dim]— Press Ctrl+C to exit[/dim]\n")
-    console.print(f"ITERA > Hi {platform.uname().node.split('.')[0]}\n")
-    
+    console.print(f"[bold yellow4]ITERA > [/bold yellow4]Hi {platform.uname().node.split('.')[0]}\n")
+
     try:
         max_steps = 25
         step = 0
-        current_model = "gemma4:e4b"
 
         while step < max_steps:
             step += 1
-            text = input("USER > ")
+            console.print("[bold sea_green2]USER > [/bold sea_green2]", end="")
+            text = input()
+            print()
 
             if text.lower() in ['/exit', '/bye']:
                 break
             elif text == '/model':
                 console.print(list_models())
             elif text == '/reset':
-                reset_context()
+                reset_context(agent)
             else:
-                output = model_chat(text, current_model)
-                console.print("\nITERA >")
+                output = agent.chat(text)
+                console.print("[bold yellow4]ITERA > [/bold yellow4]", end="")
                 console.print(Markdown(output))
+                print()
 
     except KeyboardInterrupt:
         pass
