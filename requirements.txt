@@ -1,0 +1,6 @@
+ollama
+rich
+psutil
+requests
+duckduckgo_search
+trafilatura
