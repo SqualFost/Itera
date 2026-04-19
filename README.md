@@ -106,7 +106,7 @@ ITERA operates as a local agent following these steps:
 
 ## Example
 
-![ITERA EXAMPLE](Example_screen.png)
+![ITERA EXAMPLE](assets/Example_screen.png)
 
 ---
 
