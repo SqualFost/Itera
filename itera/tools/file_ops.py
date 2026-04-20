@@ -51,13 +51,3 @@ def search_files(root: str, query: str) -> dict:
         return {"matches": matches}
     except Exception as e:
         return {"error": str(e)}
-
-def tree(path=".") -> dict:
-    """Get a simple directory tree snapshot of a path."""
-    try:
-        return {
-            "dirs": [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))],
-            "files": [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))],
-        }
-    except Exception as e:
-        return {"error": str(e)}

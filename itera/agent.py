@@ -1,7 +1,7 @@
 import ollama
 from rich.console import Console
 
-from .tools.file_ops import read_file, read_many_files, write_file, list_files, search_files, tree
+from .tools.file_ops import read_file, read_many_files, write_file, list_files, search_files
 from .tools.system import system_info, run_command
 from .tools.network import check_network, web_search_and_read
 from .tools.environmental import get_place_infos
@@ -16,7 +16,6 @@ available_functions = {
     "system_info": system_info,
     "run_command": run_command,
     "search_files": search_files,
-    "tree": tree,
     "check_network": check_network,
     "web_search_and_read": web_search_and_read,
     "get_place_infos": get_place_infos,
@@ -102,7 +101,6 @@ class Agent:
             {"type": "function", "function": {"name": "system_info", "description": system_info.__doc__ or "", "parameters": {"type": "object", "properties": {}, "required": []}}},
             {"type": "function", "function": {"name": "run_command", "description": run_command.__doc__ or "", "parameters": {"type": "object", "properties": {"cmd": {"type": "string"}}, "required": ["cmd"]}}},
             {"type": "function", "function": {"name": "search_files", "description": search_files.__doc__ or "", "parameters": {"type": "object", "properties": {"root": {"type": "string"}, "query": {"type": "string"}}, "required": ["root", "query"]}}},
-            {"type": "function", "function": {"name": "tree", "description": tree.__doc__ or "", "parameters": {"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"]}}},
             {"type": "function", "function": {"name": "check_network", "description": check_network.__doc__ or "", "parameters": {"type": "object", "properties": {"url": {"type": "string"}, "timeout": {"type": "integer"}}, "required": []}}},
             {"type": "function", "function": {"name": "get_place_infos", "description": get_place_infos.__doc__ or "", "parameters": {"type": "object", "properties": {"lat": {"type": "number"}, "lon": {"type": "number"}}, "required": ["lat", "lon"]}}},
             {"type": "function", "function": {"name": "web_search_and_read", "description": web_search_and_read.__doc__ or "", "parameters": {"type": "object", "properties": {"query": {"type": "string"}, "max_pages": {"type": "integer"}}, "required": ["query"]}}}
