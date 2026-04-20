@@ -15,6 +15,7 @@ ITERA is a lightweight terminal-based coding assistant. It combines the power of
 * **Shell Command Execution**: Run system commands directly from the chat.
 * **Project Exploration**: Visual representation of project tree structures.
 * **Streaming CLI Interface**: Fluid response rendering within the terminal.
+* **CLI Model Selection**: Specify the model at launch using `--model`.
 
 ---
 
@@ -54,6 +55,12 @@ Or using uv:
 ```bash
 uv run main.py
 ```
+
+Change the model using args : 
+```bash
+...  main.py --model yourmodel 
+```
+
 
 ---
 
