@@ -73,20 +73,22 @@ def launch_selection():
             console.print("[red]Index out of range.[/red]")
 
 def main(model):
-    agent = Agent(model=model)
     clear_terminal()
 
     with console.status("[bold sea_green2]Initializing ITERA...", spinner="bouncingBar"):
         time.sleep(1)
-    if model not in list_models():
+
+    if not model or model not in list_models():
         model = launch_selection()
+
         clear_terminal()
         with console.status("[bold sea_green2]Switching model...", spinner="bouncingBar"):
             time.sleep(0.5)
-        clear_terminal()
-        console.print(launch_ui(model))
-    else:
-        console.print(launch_ui(model))
+
+    agent = Agent(model=model)
+
+    console.print(launch_ui(model))
+
     console.print("\n[dim]— Press Ctrl+C to exit[/dim]\n")
     console.print(f"[bold yellow4]ITERA > [/bold yellow4]Hi {platform.uname().node.split('.')[0]}\n")
 
