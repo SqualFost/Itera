@@ -29,21 +29,21 @@ Itera/
 ├── README.md
 
 ├── assets/
-│   └── Example_screen.png   # Exemples / UI assets for README.md
+│   └── Example_screen.png   # Examples / UI assets for README.md
 
 ├── chroma/                  # ChromaDB
 
 ├── itera/
 │   ├── __init__.py
-│   ├── agent.py            # Core agent (reasoning + tool calling loop)
-│   ├── cli.py              # Interface CLI (input/output, streaming)
+│   ├── agent.py             # Core agent (reasoning + tool calling loop)
+│   ├── cli.py               # Interface CLI (input/output, streaming)
 │   └── tools/
 │       ├── __init__.py
-│       ├── system.py       # CPU / RAM / battery / system info tools
-│       ├── file_ops.py     # Read/write/search files + tree
-│       ├── network.py      # Web/network tools
-│       ├── environmental.py# (probablement OS/env variables, context runtime)
-│       └── memory.py       # ChromaDB persistent memory layer
+│       ├── system.py        # CPU / RAM / battery / system info tools
+│       ├── file_ops.py      # Read/write/search files + tree
+│       ├── network.py       # Web/network tools
+│       ├── environmental.py # (weather, air quality, etc...)
+│       └── memory.py        # ChromaDB persistent memory layer
 ```
 
 ---
@@ -126,7 +126,7 @@ ITERA can dynamically invoke the following tools:
 
 
 # Weather
-* `get_place_infos(lat, lon)`: retrieves location-based information (weather, air quality etc..)
+* `get_place_infos(lat, lon)`: retrieves location-based information (weather, air quality etc...)
 
 ---
 
@@ -159,7 +159,7 @@ The `run_command` tool executes shell commands directly on your system. Use this
 * **Python**: Core programming language.
 * **psutil**: System information retrieval.
 * **rich**: Terminal UI rendering and formatting.
-* **Chromadb**: Vector database for persistent memory.
+* **ChromaDB**: Vector database for persistent memory.
 
 ---
 
