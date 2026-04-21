@@ -1,6 +1,5 @@
 import os
 import time
-import platform
 from datetime import datetime
 from rich.console import Console
 from rich.markdown import Markdown
@@ -90,7 +89,7 @@ def main(model):
     console.print(launch_ui(model))
 
     console.print("\n[dim]— Press Ctrl+C to exit[/dim]\n")
-    console.print(f"[bold yellow4]ITERA > [/bold yellow4]Hi {platform.uname().node.split('.')[0]}\n")
+    console.print(f"[bold yellow4]ITERA > [/bold yellow4]Hi, how can I help you today ?\n")
 
     try:
         max_steps = 25

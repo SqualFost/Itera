@@ -16,6 +16,7 @@ ITERA is a lightweight terminal-based coding assistant. It combines the power of
 * **Project Exploration**: Visual representation of project tree structures.
 * **Streaming CLI Interface**: Fluid response rendering within the terminal.
 * **CLI Model Selection**: Specify the model at launch using `--model`.
+* **Persistent Memory**: Uses ChromaDB for vector-based long-term memory storage.
 
 ---
 
@@ -23,10 +24,26 @@ ITERA is a lightweight terminal-based coding assistant. It combines the power of
 
 ```text
 Itera/
-├── main.py        # CLI interface (UI + chat loop)
-├── model.py       # LLM wrapper + agent reasoning loop
-├── tools.py       # System, file, and shell tool definitions
-└── README.md      # Documentation
+├── main.py                  # Entry point CLI
+├── requirements.txt
+├── README.md
+
+├── assets/
+│   └── Example_screen.png   # Exemples / UI assets for README.md
+
+├── chroma/                  # ChromaDB
+
+├── itera/
+│   ├── __init__.py
+│   ├── agent.py            # Core agent (reasoning + tool calling loop)
+│   ├── cli.py              # Interface CLI (input/output, streaming)
+│   └── tools/
+│       ├── __init__.py
+│       ├── system.py       # CPU / RAM / battery / system info tools
+│       ├── file_ops.py     # Read/write/search files + tree
+│       ├── network.py      # Web/network tools
+│       ├── environmental.py# (probablement OS/env variables, context runtime)
+│       └── memory.py       # ChromaDB persistent memory layer
 ```
 
 ---
@@ -69,7 +86,7 @@ Change the model using args :
 Once started:
 
 ```bash
-ITERA > How can I help you?
+ITERA > Hi, how can I help you today ?
 ```
 
 The assistant will process the request. To exit:
@@ -90,13 +107,26 @@ ITERA can dynamically invoke the following tools:
 * `write_file(path, content)`
 * `list_files(path)`
 * `search_files(root, query)`
-* `tree(path)`
 
 ### System
 * `system_info()`: Returns CPU, RAM, disk, and battery usage statistics.
 
 ### Shell
 * `run_command(cmd)`: Executes system-level commands.
+
+### Web Search
+
+* `check_network(url)`: checks internet connectivity to a given URL
+* `web_search_and_read(query, max_pages)`: performs a web search and extracts relevant information from top results
+
+### Memory
+
+* `get_memory(query, k)`: retrieves semantically relevant stored memories from ChromaDB
+* `save_memory(text)`: stores information into persistent vector memory (ChromaDB) for long-term context retention
+
+
+# Weather
+* `get_place_infos(lat, lon)`: retrieves location-based information (weather, air quality etc..)
 
 ---
 
@@ -129,6 +159,7 @@ The `run_command` tool executes shell commands directly on your system. Use this
 * **Python**: Core programming language.
 * **psutil**: System information retrieval.
 * **rich**: Terminal UI rendering and formatting.
+* **Chromadb**: Vector database for persistent memory.
 
 ---
 
