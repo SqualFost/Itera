@@ -121,6 +121,3 @@ def main(model):
         with console.status("[bold sea_green2]Exiting ITERA...", spinner="bouncingBar"):
             time.sleep(1)
         clear_terminal()
-
-if __name__ == "__main__":
-    main(model="gemma4:e4b")

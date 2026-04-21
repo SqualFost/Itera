@@ -35,6 +35,6 @@ def system_info() -> dict:
     }
 
 def run_command(cmd: str) -> str:
-    """Execute a shell command and return its output."""
+    """Execute any shell command on the host machine and return its complete output (stdout and stderr). Use this for system actions not covered by other tools."""
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     return result.stdout + result.stderr

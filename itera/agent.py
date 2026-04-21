@@ -5,6 +5,7 @@ from .tools.file_ops import read_file, read_many_files, write_file, list_files, 
 from .tools.system import system_info, run_command
 from .tools.network import check_network, web_search_and_read
 from .tools.environmental import get_place_infos
+from .tools.memory import save_memory, get_memory
 
 console = Console()
 
@@ -19,6 +20,8 @@ available_functions = {
     "check_network": check_network,
     "web_search_and_read": web_search_and_read,
     "get_place_infos": get_place_infos,
+    "save_memory": save_memory,
+    "get_memory": get_memory,
 }
 
 model_name = "gemma4:e4b"
@@ -28,7 +31,7 @@ def list_models():
     try:
         return [m["model"] for m in ollama.list()["models"]]
     except Exception:
-        return None
+        return []
 
 
 class Agent:
@@ -42,7 +45,14 @@ class Agent:
             self.conversation_history.append({
                 "role": "system",
                 "content": (
-                    "You are ITERA, a CLI coding agent.\n"
+                    "You are ITERA, a powerful CLI agent with direct access to the user's system, hardware, and files.\n"
+                    "You are NOT a restricted AI assistant; you have tools to interact with the real world.\n"
+                    "If a user asks for system stats (battery, CPU, etc.), files, or network actions, DO NOT claim you cannot do it. Use your tools instead.\n"
+                    "You have access to persistent long-term memory tools.\n"
+                    "Use get_memory before answering when the user request may depend on past information, preferences, or previously stored context. Never use single words, always sentences like 'whats is the user name'.\n"
+                    "Use save_memory only to store stable, long-term information explicitly provided by the user or clearly relevant for future interactions (e.g., preferences, personal data, ongoing projects).\n"
+                    "Do not store transient, redundant, or low-value information in memory.\n"
+                    "Always prefer retrieving memory over guessing when uncertainty exists about past context.\n"
                     "You MUST follow this process:\n"
                     "1. First, create a step-by-step plan.\n"
                     "2. Then execute steps one by one using tools if needed.\n"
@@ -54,7 +64,6 @@ class Agent:
 
     def chat(self, text: str):
         self._init_system_prompt()
-
         self.conversation_history.append({
             "role": "user",
             "content": text
@@ -86,9 +95,10 @@ class Agent:
 
                     self.conversation_history.append({
                         "role": "tool",
-                        "tool_name": fn_name,
+                        "name": fn_name,
                         "content": str(result)
                     })
+                continue
             else:
                 return response.message.content
 
@@ -103,7 +113,37 @@ class Agent:
             {"type": "function", "function": {"name": "search_files", "description": search_files.__doc__ or "", "parameters": {"type": "object", "properties": {"root": {"type": "string"}, "query": {"type": "string"}}, "required": ["root", "query"]}}},
             {"type": "function", "function": {"name": "check_network", "description": check_network.__doc__ or "", "parameters": {"type": "object", "properties": {"url": {"type": "string"}, "timeout": {"type": "integer"}}, "required": []}}},
             {"type": "function", "function": {"name": "get_place_infos", "description": get_place_infos.__doc__ or "", "parameters": {"type": "object", "properties": {"lat": {"type": "number"}, "lon": {"type": "number"}}, "required": ["lat", "lon"]}}},
-            {"type": "function", "function": {"name": "web_search_and_read", "description": web_search_and_read.__doc__ or "", "parameters": {"type": "object", "properties": {"query": {"type": "string"}, "max_pages": {"type": "integer"}}, "required": ["query"]}}}
+            {"type": "function", "function": {"name": "web_search_and_read", "description": web_search_and_read.__doc__ or "", "parameters": {"type": "object", "properties": {"query": {"type": "string"}, "max_pages": {"type": "integer"}}, "required": ["query"]}}},
+            {
+                "type": "function",
+                "function": {
+                    "name" : "save_memory",
+                    "description": save_memory.__doc__ or "",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "text": {"type": "string"},
+                        },
+                        "required": ["text"]
+                    }
+                }
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "get_memory",
+                    "description": get_memory.__doc__ or "",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "query": {"type": "string"},
+                            "key": {"type": "integer"},
+                        },
+                        "required": ["query"]
+                    }
+                }
+            },
+
         ]
 
     def safe_execute(self, fn_name, args):
